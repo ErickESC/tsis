@@ -1,5 +1,77 @@
 <html>
-	<body>
-		Hola Spring Boot!
-	</body>
+
+<body>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
+    </script>
+    
+	 <script>
+	 
+    	$(document).ready(function(){
+      
+       		// URL del API de youtube      
+       		var URL="http://localhost:8081/alumnos";
+       
+       		//Ariable para poder usar la playlist fuera de la funcion
+       		var lista;
+       		
+       		console.log("Ready");
+       		
+       		// Invocación AJAX
+       	$.ajax({
+  			method: 'POST',
+  			url: URL,
+  			data: { matricula: 13570, nombre: "John", carrera:"Quimica" }
+		})
+       		
+       	  $.ajax({url: URL, 
+       			  method: 'GET',
+       		  	  success: cargaAlumnos});
+       		
+       		// Callback. Playlist es un objeto que contiene otros objetos que son las entradas de la lista
+       		function cargaAlumnos(Alumnos)
+       		{
+       	  
+          		//Guardamos las playlist en una variable global para poderla usar fuera de la funcion
+       	  		lista=Alumnos;
+          		
+          		$("#contenido").append($("Mapachito"));
+          		
+          		// Crea una tabla dinamica
+          		$("#contenido").append($("<dl>"));
+ 			
+          		// Recorre los objetos de la playlist y genera la lista
+          		var i;
+                    
+          		for (i=0;i<Alumnos.length;i++) {
+    	     		var element = Alumnos[i];
+            
+             		console.log(element);
+            
+             		//Se asigna el indice de la cancion al id del elemento
+          	 		$("#contenido").append($("<dt id=\""+i+"\">"
+         			
+          	 		+"<a>"+element.nombre+"</a><br>"
+             		+"<a>"+element.matricula+"</a><br>"
+             		+"<a>"+element.carrera+"</a><br>"
+             		
+             		+"</dt>"));  
+          		}  
+           
+          		$("#contenido").append($("</dl>"));
+          
+          		$("dt").click(function(){
+     					reproduceVideo(this);
+  				});
+       		}
+   		});
+    </script>
+	
+		<h1 align=Center>Lista Alumnos</h1>
+   
+   		<div id="contenido">lista</div>	
+   		
+</body>
+	
+	
 </html>
