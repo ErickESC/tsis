@@ -6,70 +6,173 @@
     </script>
     
 	 <script>
-	 
+	 	
+	 	//Variables globales para guardar los valores de los inputs
+	 	var nombre= "Nombre sin definir";
+	 	var matricula = "Matricula sin definir";
+	 	var carrera = "Carrera sin definir";
+	 	
+	 	//Guardamos los valores de los inputs
+	 	function guarda(type) {
+		  
+		  if (type == "M") {
+		    	matricula = document.getElementById("Matricula").value;
+		    	console.log(this.matricula);
+		  }
+		  if (type == "N") {
+			    nombre = document.getElementById("Nombre").value;
+			    console.log(this.nombre);
+		  }
+		  if (type == "C") {
+			    carrera = document.getElementById("Carrera").value;
+			    console.log(this.carrera);
+		  }
+		}
+
+	 	
     	$(document).ready(function(){
-      
-       		// URL del API de youtube      
-       		var URL="http://localhost:8081/alumnos";
        
        		//Ariable para poder usar la playlist fuera de la funcion
        		var lista;
        		
        		console.log("Ready");
        		
-       		// Invocación AJAX
-       	$.ajax({
-  			method: 'POST',
-  			url: URL,
-  			data: { matricula: 13570, nombre: "John", carrera:"Quimica" }
-		})
-       		
-       	  $.ajax({url: URL, 
-       			  method: 'GET',
-       		  	  success: cargaAlumnos});
-       		
-       		// Callback. Playlist es un objeto que contiene otros objetos que son las entradas de la lista
-       		function cargaAlumnos(Alumnos)
-       		{
-       	  
-          		//Guardamos las playlist en una variable global para poderla usar fuera de la funcion
-       	  		lista=Alumnos;
+       		//Al hacer click en algun boton se detonara esta funcion
+			$("button").click(function(){
+			  //Obtenemos el id de la Funcion
+	          var ID= $(this).attr("id");
+     		  
+			  //Se actuara de acuerdo al id del boton
+			  switch (ID) {
+  					case '1':
+  						creaAlumno();
+  						break;
+  					case '2':
+  						actualizaAlumno();
+  						break;
+  					case '3':
+  						cargaAlumno();
+  						break;
+  					case '4':
+  						borraAlumno();
+  						break;
+  					case '5':
+  						var URL = "http://localhost:8081/alumnos";
+  					  
+  						$.ajax({url: URL, 
+  		     		    		method: 'GET',
+  		     		    		success: cargaAlumnos
+  		     		    });
+  						break;
+			  }
+	  		});
+			
+	       	function creaAlumno(){
           		
-          		$("#contenido").append($("Mapachito"));
+   				$("#contenido").empty();
+   				
+   				var URL = "http://localhost:8081/alumnos";
+   				
+   				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera })
+   				
+   				//Imprimimos en consola el json generado
+   				console.log(alumno);
+   				
+   				$.ajax({url: URL, 
+ 		    		method: 'POST',
+ 		    		data: alumno
+ 		    	});
+   				
+   				
+     		}
+			
+	       	function actualizaAlumno(Alumnos){
           		
-          		// Crea una tabla dinamica
-          		$("#contenido").append($("<dl>"));
- 			
-          		// Recorre los objetos de la playlist y genera la lista
-          		var i;
-                    
-          		for (i=0;i<Alumnos.length;i++) {
-    	     		var element = Alumnos[i];
-            
-             		console.log(element);
-            
-             		//Se asigna el indice de la cancion al id del elemento
-          	 		$("#contenido").append($("<dt id=\""+i+"\">"
-         			
-          	 		+"<a>"+element.nombre+"</a><br>"
-             		+"<a>"+element.matricula+"</a><br>"
-             		+"<a>"+element.carrera+"</a><br>"
-             		
-             		+"</dt>"));  
-          		}  
-           
-          		$("#contenido").append($("</dl>"));
-          
-          		$("dt").click(function(){
-     					reproduceVideo(this);
-  				});
-       		}
-   		});
+   				$("#contenido").empty();
+   				
+   				var URL = "http://localhost:8081/alumnos";
+   				
+   				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera })
+   				
+   				//Imprimimos en consola el json generado
+   				console.log(alumno);
+   				
+   				$.ajax({url: URL, 
+ 		    		method: 'PUT',
+ 		    		data: alumno,
+ 		    		success: cargaAlumno
+ 		    	});
+   				
+     		}
+			
+	       	function cargaAlumno(){
+          		
+   				$("#contenido").empty();
+   				
+   				var URL = "http://localhost:8081/alumnos/"+parseInt(this.matricula);
+   				
+   				$.ajax({url: URL, 
+ 		    		method: 'GET',
+ 		    		success: cargaAlumnos
+ 		    	});
+   				
+     		}
+			
+	       	function borraAlumno(Alumnos){
+          		
+   				$("#contenido").empty();
+   				
+   				var URL = "http://localhost:8081/alumnos/"+parseInt(this.matricula);
+   				
+   				$.ajax({url: URL, 
+ 		    		method: 'DELETE',
+ 		    	});
+     		}
+			
+	       	function cargaAlumnos(Alumnos){
+		          		
+	       				$("#contenido").empty();
+		          		// Crea una tabla dinamica
+		          		$("#contenido").append($("<dl>"));
+	          		
+		          		// Recorre los objetos
+		          		var i;
+		                    
+		          		for (i=0;i<Alumnos.length;i++) {
+		    	     		var element = Alumnos[i];
+		            
+		             		console.log(element);
+		            
+		             		//Se asigna el indice al id del elemento
+		          	 		$("#contenido").append($("<dt id=\""+i+"\">"
+		         			
+		          	 		+"<a>"+element.nombre+"</a><br>"
+		             		+"<a>"+element.matricula+"</a><br>"
+		             		+"<a>"+element.carrera+"</a><br>"
+		             		
+		             		+"</dt>"));  
+		          		}  
+		           
+		          		$("#contenido").append($("</dl>"));
+		     }
+    	});
     </script>
-	
-		<h1 align=Center>Lista Alumnos</h1>
+		<h1 align=Center>Sistema de Alumnos</h1>
    
-   		<div id="contenido">lista</div>	
+   		<div id="box">
+   			<p>Ingresa los datos del alumno</p>
+			<p>Matricula: <input id="Matricula" onkeyup="guarda('M')"></p>
+			<p>Nombre: <input id="Nombre" onkeyup="guarda('N')"></p>
+			<p>Carrera: <input id="Carrera" onkeyup="guarda('C')"></p>
+   			<br>
+   			<button id="1">Agregar</button>
+   			<button id="2">Actualizar</button>
+   			<button id="3">Recuperar</button>
+   			<button id="4">Borrar</button>
+   			<button id="5">Recuperar todos</button>
+   		</div>
+   		<div id="contenido">
+   		</div>	
    		
 </body>
 	
