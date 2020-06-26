@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sun.tools.sjavac.Log;
 
 import lombok.extern.slf4j.Slf4j;
-import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
+import mx.uam.tsis.ejemplobackend.negocio_modelo.Alumno;
 
 /**
  * Controlador para el API rest
