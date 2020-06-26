@@ -64,12 +64,7 @@
   						break;
   					case '5':
   						console.log("Se invoco Recupera todos()");
-  						var URL = "http://localhost:8081/alumnos";
-  					  
-  						$.ajax({url: URL, 
-  		     		    		method: 'GET',
-  		     		    		success: cargaAlumnos
-  		     		    });
+  						recuperaTodos();
   						break;
 			  }
 	  		});
@@ -87,7 +82,8 @@
    				
    				$.ajax({url: URL, 
  		    		method: 'POST',
- 		    		data: alumno
+ 		    		data: alumno,
+ 		    		success: cargaAlumnos
  		    	});
    				
    				
@@ -106,7 +102,8 @@
    				
    				$.ajax({url: URL, 
  		    		method: 'PUT',
- 		    		data: alumno
+ 		    		data: alumno,
+ 		    		success: cargaAlumnos
  		    	});
    				
      		}
@@ -138,12 +135,21 @@
  		    	});
      		}
 	       	
+	       	function recuperaTodos(){
+					var URL = "http://localhost:8081/alumnos";
+					  
+						$.ajax({url: URL, 
+		     		    		method: 'GET',
+		     		    		success: cargaAlumnos
+		     		    });
+	       	}
+	       	
 	       	function cargaAlumnos(Alumnos){
 		          		
 	       				$("#contenido").empty();
 		          		// Crea una tabla dinamica
 		          		$("#contenido").append($("<dl>"));
-	          		
+	          			
 		          		// Recorre los objetos
 		          		var i;
 		                    

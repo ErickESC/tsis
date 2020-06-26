@@ -1,9 +1,10 @@
 package mx.uam.tsis.ejemplobackend.servicios;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
+import java.util.List;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sun.tools.sjavac.Log;
 
 import lombok.extern.slf4j.Slf4j;
+import mx.uam.tsis.ejemplobackend.negocio.AlumnoService;
 import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
 
 /**
@@ -30,21 +32,24 @@ import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
 @Slf4j
 public class AlumnoController {
 	
-	// La "base de datos"
-	private Map <Integer, Alumno> alumnoRepository = new HashMap <>();
+	@Autowired
+	private AlumnoService alumnoService;
 	
 	/*
 	 * Creacion de alumno
 	 */
-	@PostMapping(path = "/alumnos", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity <?> create(@RequestBody Alumno nuevoAlumno) {
+	@PostMapping(path = "/alumnos", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity <?> create(@RequestBody @Valid Alumno nuevoAlumno) {
 		
-		// No se deben agregar dos alumnos con la misma matricula
 		log.info("Recibí llamada a create con "+nuevoAlumno);
 		
-		alumnoRepository.put(nuevoAlumno.getMatricula(), nuevoAlumno);
+		Alumno alumno = alumnoService.create(nuevoAlumno);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		if(alumno != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body(alumno);
+		}else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se puede crear alumno");
+		}
 	}
 	
 	/*
@@ -52,7 +57,10 @@ public class AlumnoController {
 	 */
 	@GetMapping(path = "/alumnos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> retrieveAll() {
-		return ResponseEntity.status(HttpStatus.OK).body(alumnoRepository.values());
+		
+		List <Alumno> result = alumnoService.retriveAll();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 		
 	}
 
@@ -60,43 +68,44 @@ public class AlumnoController {
 	 * Optencion de un alumno por su matricula
 	 */
 	@GetMapping(path = "/alumnos/{matricula}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity <?> retrieve(@PathVariable("matricula") Integer matricula) {
+	public ResponseEntity <?> retrieve(@PathVariable("matricula") @Valid Integer matricula) {
 		log.info("Buscando al alumno con matricula "+matricula);
 		
-		Alumno alumno = alumnoRepository.get(matricula);
+		Alumno alumno = alumnoService.retrive(matricula);
 		
 		if(alumno != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(alumno);
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro alumno");
 		}
 	}
 	
 	/*
 	 * Actualizacion de un alumno
 	 */
-	@PutMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity <?> update(@RequestBody Alumno alumnoActualizado) {
+	@PutMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity <?> update(@RequestBody @Valid Alumno alumnoActualizado) {
 		
 		log.info("Recibí llamada a update con "+ alumnoActualizado);
 		
+		Alumno alumno;
+		
 		//Revisa que exista en el repositorio de alumnos
-		if(alumnoRepository.containsKey(alumnoActualizado.getMatricula())) {
+		if(alumnoService.exist(alumnoActualizado.getMatricula())) {
 			try {
 				
-				alumnoRepository.put(alumnoActualizado.getMatricula(), alumnoActualizado);
+				alumno = alumnoService.update(alumnoActualizado);
 				
-				log.info("Se actualizo el alumno con matricula: "+ alumnoActualizado.getMatricula()+" Datos: "+alumnoActualizado);
+				log.info("Se actualizo el alumno con matricula: "+ alumno.getMatricula()+" Datos: "+alumno);
 				
-				return ResponseEntity.status(HttpStatus.OK).body(alumnoActualizado);
+				return ResponseEntity.status(HttpStatus.OK).body(alumno);
 				
 			}catch(Exception e){
-				e.fillInStackTrace();
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("Error al actualizar alumno");
 			}
 		}else {
 			log.info("No se encontro al alumno con matricula: "+ alumnoActualizado.getMatricula());
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontro al alumno con matricula: "+ alumnoActualizado.getMatricula());
 		}
 	}
 	
@@ -104,15 +113,13 @@ public class AlumnoController {
 	 * Borrado de un alumno
 	 */
 	@DeleteMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity <?> delete(@PathVariable("matricula") Integer matricula) {
+	public ResponseEntity <?> delete(@PathVariable("matricula") @Valid Integer matricula) {
 		
 		log.info("Recibí llamada a delete con "+ matricula);
 		
 		//Revisa que exista en el repositorio de alumnos
-		if(alumnoRepository.containsKey(matricula)) {
+		if(alumnoService.delete(matricula)) {
 			try {
-				
-				alumnoRepository.remove(matricula);
 				
 				log.info("Se elimino el alumno con matricula: "+ matricula);
 				

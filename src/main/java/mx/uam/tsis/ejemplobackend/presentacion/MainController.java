@@ -21,12 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainController {
 	
-	Logger logger = Logger.getLogger("logger");
-	
 	@GetMapping("/")
 	public String index() {
 		
-		logger.info("Se invocó el método index()");
+		log.info("Se invocó el método index()");
 		
 		return "index";
 	}
