@@ -1,4 +1,4 @@
-package mx.uam.tsis.ejemplobackend.negocio_modelo;
+package mx.uam.tsis.ejemplobackend.negocio.modelo;
 
 import lombok.Builder;
 import lombok.Data;
