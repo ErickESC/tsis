@@ -31,7 +31,9 @@
 
 	 	
     	$(document).ready(function(){
-       
+       		
+    		$.ajaxSetup({contentType: "application/json; charset=utf-8"});
+    		
        		//Ariable para poder usar la playlist fuera de la funcion
        		var lista;
        		
@@ -45,18 +47,23 @@
 			  //Se actuara de acuerdo al id del boton
 			  switch (ID) {
   					case '1':
+  						console.log("Se invoco creaAlumno()");
   						creaAlumno();
   						break;
   					case '2':
+  						console.log("Se invoco actualizaAlumno()");
   						actualizaAlumno();
   						break;
   					case '3':
+  						console.log("Se invoco cargaAlumno()");
   						cargaAlumno();
   						break;
   					case '4':
+  						console.log("Se invoco borralumno()");
   						borraAlumno();
   						break;
   					case '5':
+  						console.log("Se invoco Recupera todos()");
   						var URL = "http://localhost:8081/alumnos";
   					  
   						$.ajax({url: URL, 
@@ -73,7 +80,7 @@
    				
    				var URL = "http://localhost:8081/alumnos";
    				
-   				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera })
+   				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera });
    				
    				//Imprimimos en consola el json generado
    				console.log(alumno);
@@ -90,7 +97,7 @@
           		
    				$("#contenido").empty();
    				
-   				var URL = "http://localhost:8081/alumnos";
+   				var URL = "http://localhost:8081/alumnos/"+this.matricula;
    				
    				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera })
    				
@@ -99,17 +106,16 @@
    				
    				$.ajax({url: URL, 
  		    		method: 'PUT',
- 		    		data: alumno,
- 		    		success: cargaAlumno
+ 		    		data: alumno
  		    	});
    				
      		}
 			
 	       	function cargaAlumno(){
-          		
+	       		
+	       		var URL = "http://localhost:8081/alumnos/"+this.matricula;
+	       		
    				$("#contenido").empty();
-   				
-   				var URL = "http://localhost:8081/alumnos/"+parseInt(this.matricula);
    				
    				$.ajax({url: URL, 
  		    		method: 'GET',
@@ -124,11 +130,14 @@
    				
    				var URL = "http://localhost:8081/alumnos/"+parseInt(this.matricula);
    				
+   				var alumno = JSON.stringify({ matricula: parseInt(this.matricula), nombre: this.nombre, carrera: this.carrera })
+   				
    				$.ajax({url: URL, 
  		    		method: 'DELETE',
+ 		    		data: alumno
  		    	});
      		}
-			
+	       	
 	       	function cargaAlumnos(Alumnos){
 		          		
 	       				$("#contenido").empty();
