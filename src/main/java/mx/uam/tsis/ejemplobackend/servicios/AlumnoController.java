@@ -1,6 +1,7 @@
 package mx.uam.tsis.ejemplobackend.servicios;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sun.tools.sjavac.Log;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import mx.uam.tsis.ejemplobackend.negocio.AlumnoService;
 import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
@@ -35,9 +37,15 @@ public class AlumnoController {
 	@Autowired
 	private AlumnoService alumnoService;
 	
-	/*
-	 * Creacion de alumno
+	/**
+	 * 
+	 * @param nuevoAlumno
+	 * @return status creado y alumno crado, status bad request en caso contrario
 	 */
+	@ApiOperation(
+			value = "Crear Alumno",
+			notes = "Permite crear un nuevo alumno y la matricula debe ser unica"
+			)
 	@PostMapping(path = "/alumnos", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> create(@RequestBody @Valid Alumno nuevoAlumno) {
 		
@@ -52,26 +60,37 @@ public class AlumnoController {
 		}
 	}
 	
-	/*
-	 * Optencion de todos los alumnos
+	/**
+	 * 
+	 * @return status ok y lista de alumnos
 	 */
+	@ApiOperation(
+			value = "Regresa todos los Alumnos",
+			notes = "Regresa un json con una lista de los Alumnos en la BD"
+			)
 	@GetMapping(path = "/alumnos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> retrieveAll() {
 		
-		List <Alumno> result = alumnoService.retriveAll();
+		Iterable <Alumno> result = alumnoService.retriveAll();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 		
 	}
 
-	/*
-	 * Optencion de un alumno por su matricula
+	/**
+	 * 
+	 * @param matricula
+	 * @return status ok y alumno solicitado, not found en caso contrario
 	 */
+	@ApiOperation(
+			value = "Regresa Alumno",
+			notes = "Regresa un json con los datos del alumno solicitado"
+			)
 	@GetMapping(path = "/alumnos/{matricula}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> retrieve(@PathVariable("matricula") @Valid Integer matricula) {
 		log.info("Buscando al alumno con matricula "+matricula);
 		
-		Alumno alumno = alumnoService.retrive(matricula);
+		Optional<Alumno> alumno = alumnoService.retrive(matricula);
 		
 		if(alumno != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(alumno);
@@ -80,9 +99,15 @@ public class AlumnoController {
 		}
 	}
 	
-	/*
-	 * Actualizacion de un alumno
+	/**
+	 * 
+	 * @param matricula
+	 * @return status ok y alumno actualizado, status no content en caso contrario, status conflict en caso de error
 	 */
+	@ApiOperation(
+			value = "Actualiza alumno",
+			notes = "Permite actualizar los datos de un alumno existente en la DB"
+			)
 	@PutMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> update(@RequestBody @Valid Alumno alumnoActualizado) {
 		
@@ -109,9 +134,15 @@ public class AlumnoController {
 		}
 	}
 	
-	/*
-	 * Borrado de un alumno
+	/**
+	 * 
+	 * @param matricula
+	 * @return status no content, status conflic en caso de que algo haya salido mal, not found en caso de no encontrar al alumno
 	 */
+	@ApiOperation(
+			value = "Borra Alumno",
+			notes = "Permite borrar un alumno de la BD"
+			)
 	@DeleteMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> delete(@PathVariable("matricula") @Valid Integer matricula) {
 		
