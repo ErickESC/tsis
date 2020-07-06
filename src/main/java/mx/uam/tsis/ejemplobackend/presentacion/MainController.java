@@ -1,7 +1,5 @@
 package mx.uam.tsis.ejemplobackend.presentacion;
 
-import java.util.logging.Logger;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

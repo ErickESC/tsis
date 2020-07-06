@@ -5,10 +5,10 @@ package mx.uam.tsis.ejemplobackend.negocio;
 
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sun.tools.sjavac.Log;
 
 import mx.uam.tsis.ejemplobackend.datos.AlumnoRepository;
 import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
@@ -53,8 +53,8 @@ public class AlumnoService {
 	 * @param matricula
 	 * @return Alumno
 	 */
-	public Optional<Alumno> retrive(Integer matricula){
-		return alumnoRepository.findById(matricula);
+	public Alumno retrive(Integer matricula){
+		return alumnoRepository.findById(matricula).get();
 	}
 	
 	/**
@@ -71,17 +71,14 @@ public class AlumnoService {
 	
 	
 	public boolean delete(Integer matricula){
-		Log.info("Service Delete");
+		
 		try {
 			alumnoRepository.deleteById(matricula);
 			return true;
 		}catch(Exception e){
 			e.getMessage();
 			return false;
-		}
-		
-		
-		
+		}	
 	}
 	
 	/**

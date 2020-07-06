@@ -1,6 +1,3 @@
-/**
- * 
- */
 package mx.uam.tsis.ejemplobackend.datos;
 
 import org.springframework.data.repository.CrudRepository;

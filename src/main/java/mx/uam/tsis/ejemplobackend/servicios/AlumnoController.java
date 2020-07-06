@@ -1,6 +1,7 @@
 package mx.uam.tsis.ejemplobackend.servicios;
 
-import java.util.Optional;
+
+
 
 import javax.validation.Valid;
 
@@ -24,7 +25,7 @@ import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
 /**
  * Controlador para el API rest
  * 
- * @author humbertocervantes
+ * @author erick
  *
  */
 @RestController
@@ -87,7 +88,7 @@ public class AlumnoController {
 	public ResponseEntity <?> retrieve(@PathVariable("matricula") @Valid Integer matricula) {
 		log.info("Buscando al alumno con matricula "+matricula);
 		
-		Optional<Alumno> alumno = alumnoService.retrive(matricula);
+		Alumno alumno = alumnoService.retrive(matricula);
 		
 		if(alumno != null) {
 			return ResponseEntity.status(HttpStatus.OK).body(alumno);
@@ -140,7 +141,7 @@ public class AlumnoController {
 			value = "Borra Alumno",
 			notes = "Permite borrar un alumno de la BD"
 			)
-	@DeleteMapping(path = "/alumnos/{matricula}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(path = "/alumnos/{matricula}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity <?> delete(@PathVariable("matricula") @Valid Integer matricula) {
 		
 		log.info("Recibí llamada a delete con "+ matricula);
