@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity //Indica que hay que persistir en BD
+@EqualsAndHashCode
 public class Grupo {
 	
 	@ApiModelProperty(notes = "ID del grupo", required = true)
@@ -35,7 +37,7 @@ public class Grupo {
 	
 	@ApiModelProperty(notes = "Lista de alumnos", required = true)
 	@Builder.Default
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id") //Para unificar las tablas de alumno y grupo
 	private List <Alumno> alumnos = new ArrayList <> ();
 	

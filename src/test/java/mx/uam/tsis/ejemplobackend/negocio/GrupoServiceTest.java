@@ -4,6 +4,7 @@
 package mx.uam.tsis.ejemplobackend.negocio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
@@ -17,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import mx.uam.tsis.ejemplobackend.datos.AlumnoRepository;
 import mx.uam.tsis.ejemplobackend.datos.GrupoRepository;
 import mx.uam.tsis.ejemplobackend.negocio.modelo.Alumno;
 import mx.uam.tsis.ejemplobackend.negocio.modelo.Grupo;
@@ -130,6 +130,7 @@ public class GrupoServiceTest {
 	@Test
 	public void testUnsuccesfulRetrive() {
 		
+		@SuppressWarnings("unused")
 		Grupo grupo = new Grupo();
 
 		when(grupoRepositoryMock.findById(1)).thenReturn(Optional.ofNullable(null));
