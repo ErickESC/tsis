@@ -70,9 +70,9 @@ public class GrupoControllerIntegrationTest {
 		// Creo la petición con el alumno como body y el encabezado
 		HttpEntity <Grupo> request2 = new HttpEntity <> (grupo, headers);
 		
-		ResponseEntity <Alumno> responseEntity = restTemplate.exchange("/alumnos", HttpMethod.POST, request, Alumno.class);
+		restTemplate.exchange("/alumnos", HttpMethod.POST, request, Alumno.class);
 		
-		ResponseEntity <Grupo> responseEntity2 = restTemplate.exchange("/grupos", HttpMethod.POST, request2, Grupo.class);
+		restTemplate.exchange("/grupos", HttpMethod.POST, request2, Grupo.class);
 	}
 	
 	@AfterEach
@@ -81,7 +81,6 @@ public class GrupoControllerIntegrationTest {
 		// Aqui se puede hacer cosas para deshacer lo que se realizo antes de los casos de prueba
 		// Elimino al grupo y al alumno
 		int matricula = 1234;
-		int id = 1;
 		
 		// Creo el encabezado
 		HttpHeaders headers = new HttpHeaders();
@@ -89,11 +88,8 @@ public class GrupoControllerIntegrationTest {
 		
 		// Creo la petición con el alumno como body y el encabezado
 		HttpEntity <Integer> request = new HttpEntity <> (matricula, headers);
-
-		// Creo la petición con el alumno como body y el encabezado
-		HttpEntity <Integer> request2 = new HttpEntity <> (id, headers);
 		
-		ResponseEntity <Integer> responseEntity = restTemplate.exchange("/alumnos/"+matricula, HttpMethod.DELETE, request, Integer.class);
+		restTemplate.exchange("/alumnos/"+matricula, HttpMethod.DELETE, request, Integer.class);
 	}
 	
 	/*
@@ -131,11 +127,13 @@ public class GrupoControllerIntegrationTest {
 	
 	@Test
 	public void testAddStudentToGroup204() {
-		
-		// Escribo una matricula distinta a la del alumno creado en prepare()
+		/**
+		 * CAMBIANDO CUALQUIERA DE LOS VALORES FUNCIONA
+		 */
+		// Escribo una matricula del alumno creado en prepare()
 		int matricula = 1234;
-		// Escribo el id del grupo creado en prepare()
-		int id = 133;
+		// Escribo el id distinto al del grupo creado en prepare()
+		int id = 10;
 		
 		// Creo el encabezado
 		HttpHeaders headers = new HttpHeaders();
@@ -148,5 +146,13 @@ public class GrupoControllerIntegrationTest {
 		
 		// Corroboro que el endpoint me regresa el estatus esperado
 		assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+		
+		// Corroboro que en la base de datos no actualizo el grupo con el alumno o viceversa
+		Optional <Grupo> optGrupo = grupoRepository.findById(1);
+		Optional <Alumno> optAlumno = alumnoRepository.findById(matricula);
+		
+		//Si la lista de alumnos del grupo no contiene al alumno, entonces la prueba es exitosa
+		// NOTA: Se tuvo que utilizar una recuperacion EAGER ya que si se ocupaba LAZY no funcionaria
+		assertEquals(false,optGrupo.get().getAlumnos().contains(optAlumno.get()));
 	}
 }
