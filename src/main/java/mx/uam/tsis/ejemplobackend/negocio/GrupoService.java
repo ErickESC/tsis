@@ -27,7 +27,12 @@ public class GrupoService {
 	public Grupo create(Grupo nuevoGrupo) {
 		
 		//Ya hay garantia de que no habra dos grupos con el mismo ID gracias al autogenerado
-		return grupoRepository.save(nuevoGrupo);
+		try {
+			return grupoRepository.save(nuevoGrupo);
+		}catch(Exception e) {
+			e.getMessage();
+			return null;
+		}
 	}
 	
 	/**
@@ -44,7 +49,14 @@ public class GrupoService {
 	 * @return grupo
 	 */
 	public Optional<Grupo> retrive(Integer id){
-		return grupoRepository.findById(id);
+		
+		Optional <Grupo> grupoOpt = grupoRepository.findById(id);
+		
+		if(grupoOpt.isPresent()) {
+			return grupoOpt;
+		}else {
+			return null;
+		}
 	}
 	
 	/**
@@ -53,10 +65,15 @@ public class GrupoService {
 	 * @return Grupo actualizado, null en caso de no haberse encontrado
 	 */
 	public Grupo update(Grupo grupoActualizado){ 
-		
-		Grupo grupoOpt = grupoRepository.save(grupoActualizado);
-		
-		return grupoOpt;
+		log.info("Llamado a update");
+		Optional <Grupo>grupoOpt = grupoRepository.findById(grupoActualizado.getId());
+
+		if(grupoOpt.isPresent()) {
+			return grupoRepository.save(grupoActualizado);
+		}else {
+			log.info("El grupo no existe");
+			return null;
+		}
 	}
 	
 	
@@ -90,26 +107,31 @@ public class GrupoService {
 	 * @param matricula del alumno
 	 * @return true si se agrego con exito, false en caso contrario
 	 */
-	public boolean addStudentToGroup(Integer id, Integer matricula) {
-		log.info("Agregando alumno con matricula: "+matricula+" al grupo: "+id);
-		//Verificamos si existe alumno y grupo
-		if(grupoRepository.existsById(id) && alumnoService.exist(matricula)) {
-			//Recuperamos el grupo
-			Grupo grupo = grupoRepository.findById(id).get();
-			//Recuperamos al alumno
-			Alumno alumno = alumnoService.retrive(matricula);
-			//Agregamoms al alumno
-			grupo.addAlumno(alumno);
-			log.info("Se agrego alumno a grupo");
-			//Persistimos en la BD el grupo
-			grupoRepository.save(grupo);
-			log.info("Se guardo el cambio en BD");
-			return true;
-		}else {
-			log.info("No se encontro grupo o alumno");
+	public boolean addStudentToGroup(Integer groupId, Integer matricula) {
+		
+		log.info("Agregando alumno con matricula "+matricula+" al grupo "+groupId);
+		
+		// 1.- Recuperamos primero al alumno
+		Alumno alumno = alumnoService.retrive(matricula);
+		
+		// 2.- Recuperamos el grupo
+		Optional <Grupo> grupoOpt = grupoRepository.findById(groupId);
+		
+		// 3.- Verificamos que el alumno y el grupo existan
+		if(!grupoOpt.isPresent() || alumno == null) {
+			
+			log.info("No se encontró alumno o grupo");
+			
 			return false;
 		}
+		log.info("Agregado el alumno con matricula "+matricula+" al grupo "+groupId);
+		// 4.- Agrego el alumno al grupo
+		Grupo grupo = grupoOpt.get();
+		grupo.addAlumno(alumno);
 		
+		// 5.- Persistir el cambio
+		grupoRepository.save(grupo);
 		
+		return true;
 	}
 }

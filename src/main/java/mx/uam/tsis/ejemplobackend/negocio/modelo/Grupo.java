@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 
@@ -35,6 +36,7 @@ public class Grupo {
 	@ApiModelProperty(notes = "Lista de alumnos", required = true)
 	@Builder.Default
 	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id") //Para unificar las tablas de alumno y grupo
 	private List <Alumno> alumnos = new ArrayList <> ();
 	
 	public boolean addAlumno(Alumno alumno) {
